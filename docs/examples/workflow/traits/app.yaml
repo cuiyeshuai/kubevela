@@ -1,0 +1,58 @@
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: workflow-with-traits-rollout
+  namespace: default
+spec:
+  components:
+    - name: express-server
+      type: webservice
+      externalRevision: express-server-v1
+      properties:
+        image: stefanprodan/podinfo:4.0.3
+      traits:
+        - type: rollout
+          properties:
+            targetSize: 5
+            rolloutBatches:
+              - replicas: 2
+              - replicas: 3
+    - name: express-server
+      type: webservice
+      externalRevision: express-server-v2
+      properties:
+        image: stefanprodan/podinfo:5.0.2
+      traits:
+        - type: rollout
+          properties:
+            targetSize: 5
+            batchPartition: 0
+            rolloutBatches:
+              - replicas: 2
+              - replicas: 3
+    - name: express-server
+      type: webservice
+      externalRevision: express-server-v2
+      properties:
+        image: stefanprodan/podinfo:5.0.2
+      traits:
+        - type: rollout
+          properties:
+            targetSize: 5
+            rolloutBatches:
+              - replicas: 2
+              - replicas: 3
+  workflow:
+    steps:
+      - name: express-server1
+        type: apply-component
+        properties:
+          component: express-server
+      - name: express-server2-2
+        type: apply-component
+        properties:
+          component: express-server
+      - name: express-server2-5
+        type: apply-component
+        properties:
+          component: express-server
